@@ -8,7 +8,6 @@
 <!-- Firebase SDK (Compat for browser) -->
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-storage-compat.js"></script>
 
 <style>
   body { background:#111; color:#fff; font-family:sans-serif; margin:0; padding:0;}
@@ -41,12 +40,12 @@
 </div>
 
 <script>
-  // 🔹 Firebase Config (replace storageBucket with .appspot.com)
+  // 🔹 Firebase Config
   const firebaseConfig = {
     apiKey: "AIzaSyD-LmmD7M9GM2PgZi-_2K_N0SaapHAaVgw",
     authDomain: "cardealerproject-80a33.firebaseapp.com",
     projectId: "cardealerproject-80a33",
-    storageBucket: "cardealerproject-80a33.appspot.com", // Fixed
+    storageBucket: "cardealerproject-80a33.appspot.com",
     messagingSenderId: "748864580133",
     appId: "1:748864580133:web:87bb0b0a1966be68396dcc",
     measurementId: "G-DVVHSC0V8V"
@@ -55,7 +54,10 @@
   // 🔹 Initialize Firebase
   firebase.initializeApp(firebaseConfig);
   const db = firebase.firestore();
-  const storage = firebase.storage();
+
+  // 🔹 Cloudinary Config
+  const cloudName = "dn7hik4gq"; // Replacewith your Cloudinary cloud name
+  const unsignedUploadPreset = "car images"; // Create in Cloudinary Upload Settings
 
   const carForm = document.getElementById("carForm");
   const status = document.getElementById("status");
@@ -78,34 +80,27 @@
 
       let imagesURLs = [];
 
-      // 🔹 Upload each image using resumable upload
       for (let i = 0; i < imagesFiles.length; i++) {
         const file = imagesFiles[i];
-        const storageRef = storage.ref(`cars/${Date.now()}_${file.name}`);
-        const uploadTask = storageRef.put(file);
+        const formData = new FormData();
+        formData.append("file", file);
+        formData.append("upload_preset", unsignedUploadPreset);
 
-        const url = await new Promise((resolve, reject) => {
-          uploadTask.on('state_changed',
-            (snapshot) => {
-              const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-              status.innerText = `Uploading image ${i + 1}/${imagesFiles.length}: ${progress.toFixed(0)}%`;
-            },
-            (error) => reject(error),
-            async () => {
-              const downloadURL = await uploadTask.snapshot.ref.getDownloadURL();
-              resolve(downloadURL);
-            }
-          );
+        const res = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/image/upload`, {
+          method: "POST",
+          body: formData
         });
-
-        imagesURLs.push(url);
+        const data = await res.json();
+        imagesURLs.push(data.secure_url);
+        status.innerText = `Uploading image ${i+1} of ${imagesFiles.length} ✅`;
       }
 
       status.innerText = "Saving car data...";
       await db.collection("cars").add({
         title, brand, year, mileage, fuel, transmission, city, description,
         images: imagesURLs,
-        status: "Available"
+        status: "Available",
+        createdAt: firebase.firestore.FieldValue.serverTimestamp()
       });
 
       status.style.color = "#0f0";
