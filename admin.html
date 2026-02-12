@@ -3,21 +3,28 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Admin Panel - Add Cars</title>
+<title>Admin Panel - Manage Cars</title>
 
-<!-- Firebase SDK (Compat for browser) -->
+<!-- Firebase SDK -->
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
 
 <style>
   body { background:#111; color:#fff; font-family:sans-serif; margin:0; padding:0;}
-  .container { max-width:500px; margin:50px auto; padding:20px; background:#222; border-radius:15px; box-shadow:0 0 30px #0ff;}
+  .container { max-width:700px; margin:50px auto; padding:20px; background:#222; border-radius:15px; box-shadow:0 0 30px #0ff;}
   h2 { text-align:center; margin-bottom:20px; color:#0ff; text-shadow:0 0 10px #0ff;}
   input, textarea, button { width:100%; padding:12px; margin:8px 0; border-radius:8px; border:none; font-size:1rem; }
   input, textarea { background:#111; color:#fff; border:1px solid #0ff; }
   button { background:#0ff; color:#111; font-weight:bold; cursor:pointer; transition:0.3s; }
   button:hover { background:#0aa; color:#fff; box-shadow:0 0 15px #0ff; }
   #status { text-align:center; margin-top:15px; font-weight:bold; }
+  .cars-list { margin-top:40px; }
+  .car-card { background:#333; padding:15px; margin-bottom:20px; border-radius:10px; box-shadow:0 0 10px #0ff; }
+  .car-card h3 { margin:5px 0; color:#0ff; }
+  .car-images img { width:100px; height:80px; object-fit:cover; margin-right:5px; margin-bottom:5px; cursor:pointer; border:2px solid #0ff; border-radius:5px; }
+  .car-images img:hover { border-color:#0aa; }
+  .delete-btn { background:#f00; color:#fff; padding:5px 10px; margin:5px 0; border-radius:5px; cursor:pointer; }
+  .delete-btn:hover { background:#c00; }
 </style>
 </head>
 <body>
@@ -36,7 +43,11 @@
     <input type="file" id="images" multiple required>
     <button type="submit">Add Car</button>
   </form>
+
   <p id="status"></p>
+
+  <h2>Uploaded Cars</h2>
+  <div class="cars-list" id="carsList"></div>
 </div>
 
 <script>
@@ -51,20 +62,21 @@
     measurementId: "G-DVVHSC0V8V"
   };
 
-  // 🔹 Initialize Firebase
   firebase.initializeApp(firebaseConfig);
   const db = firebase.firestore();
 
   // 🔹 Cloudinary Config
-  const cloudName = "dn7hik4gq"; // Replacewith your Cloudinary cloud name
-  const unsignedUploadPreset = "car images"; // Create in Cloudinary Upload Settings
+  const cloudName = "dn7hik4gq"; // Your Cloudinary cloud name
+  const unsignedUploadPreset = "car images"; // Your upload preset
 
   const carForm = document.getElementById("carForm");
   const status = document.getElementById("status");
+  const carsList = document.getElementById("carsList");
 
+  // ---------------- Add Car ----------------
   carForm.addEventListener("submit", async (e) => {
     e.preventDefault();
-    status.style.color = "#0ff";
+    status.style.color="#0ff";
     status.innerText = "Uploading images...";
 
     try {
@@ -80,16 +92,13 @@
 
       let imagesURLs = [];
 
-      for (let i = 0; i < imagesFiles.length; i++) {
+      for(let i=0;i<imagesFiles.length;i++){
         const file = imagesFiles[i];
         const formData = new FormData();
         formData.append("file", file);
         formData.append("upload_preset", unsignedUploadPreset);
 
-        const res = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/image/upload`, {
-          method: "POST",
-          body: formData
-        });
+        const res = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/image/upload`, { method:"POST", body: formData });
         const data = await res.json();
         imagesURLs.push(data.secure_url);
         status.innerText = `Uploading image ${i+1} of ${imagesFiles.length} ✅`;
@@ -99,20 +108,83 @@
       await db.collection("cars").add({
         title, brand, year, mileage, fuel, transmission, city, description,
         images: imagesURLs,
-        status: "Available",
+        status:"Available",
         createdAt: firebase.firestore.FieldValue.serverTimestamp()
       });
 
-      status.style.color = "#0f0";
-      status.innerText = "✅ Car Added Successfully!";
+      status.style.color="#0f0";
+      status.innerText="✅ Car Added Successfully!";
       carForm.reset();
 
-    } catch (error) {
+    } catch(error){
       console.error(error);
-      status.style.color = "#f00";
-      status.innerText = "❌ Error: " + error.message;
+      status.style.color="#f00";
+      status.innerText="❌ Error: "+error.message;
     }
   });
+
+  // ---------------- Show Uploaded Cars ----------------
+  const showCars = () => {
+    db.collection("cars").orderBy("createdAt","desc").onSnapshot(snapshot=>{
+      carsList.innerHTML="";
+      snapshot.forEach(doc=>{
+        const car = doc.data();
+        const carId = doc.id;
+
+        let imagesHTML="";
+        car.images.forEach(url=>{
+          imagesHTML += `<img src="${url}" data-carid="${carId}" data-imgurl="${url}">`;
+        });
+
+        const carCard = document.createElement("div");
+        carCard.classList.add("car-card");
+        carCard.innerHTML=`
+          <h3>${car.title}</h3>
+          <p><strong>Brand:</strong> ${car.brand} | <strong>Year:</strong> ${car.year}</p>
+          <p><strong>Mileage:</strong> ${car.mileage} | <strong>Fuel:</strong> ${car.fuel} | <strong>Transmission:</strong> ${car.transmission}</p>
+          <p><strong>City:</strong> ${car.city}</p>
+          <p>${car.description}</p>
+          <div class="car-images">${imagesHTML}</div>
+          <button class="delete-btn" data-carid="${carId}">Delete Entire Car</button>
+        `;
+        carsList.appendChild(carCard);
+      });
+
+      // ---------------- Image Click to Open ----------------
+      document.querySelectorAll(".car-images img").forEach(img=>{
+        img.addEventListener("click", ()=>{
+          const imgUrls = snapshot.docs.find(d=>d.id===img.dataset.carid).data().images;
+          let galleryHTML="";
+          imgUrls.forEach(u=>{
+            galleryHTML+=`<img src="${u}" style="width:300px;margin:10px;">`;
+          });
+          const w = window.open("","_blank","width=1000,height=600,scrollbars=yes");
+          w.document.write(`<h2>${img.dataset.carid} Images</h2>${galleryHTML}`);
+        });
+      });
+
+      // ---------------- Delete Entire Car ----------------
+      document.querySelectorAll(".delete-btn").forEach(btn=>{
+        btn.addEventListener("click", async ()=>{
+          if(confirm("Delete this car and all its images?")){
+            const carDoc = await db.collection("cars").doc(btn.dataset.carid).get();
+            const carData = carDoc.data();
+            // Delete images from Cloudinary
+            for(let url of carData.images){
+              const public_id = url.split("/").pop().split(".")[0];
+              // Cloudinary deletion via unsigned API is not possible directly
+              // Admin should use Cloudinary dashboard for actual image deletion
+            }
+            // Delete Firestore document
+            await db.collection("cars").doc(btn.dataset.carid).delete();
+          }
+        });
+      });
+
+    });
+  };
+
+  showCars();
 </script>
 
 </body>
