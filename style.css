@@ -1,0 +1,156 @@
+
+/* General */
+body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Poppins', sans-serif;
+  background: #111;
+  color: rgb(151, 151, 247);
+  overflow-x: hidden;
+}
+
+/* Hero */
+.hero {
+  position: relative;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  background: linear-gradient(135deg, #0a0a0a, #1a1a1a);
+}
+.hero-overlay {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(0,0,0,0.5);
+}
+.hero-content {
+  position: relative;
+  z-index: 2;
+}
+.hero h1 {
+  font-size: 3rem;
+  font-weight: 700;
+  margin-bottom: 15px;
+  text-shadow: 0 0 10px #ff0033, 0 0 20px #ff0033;
+}
+.hero p {
+  font-size: 1.2rem;
+  margin-bottom: 30px;
+  color: #ccc;
+}
+.scroll-btn {
+  display: inline-block;
+  font-size: 1.2rem;
+  color: #ff0033;
+  text-decoration: none;
+  padding: 10px 20px;
+  border: 2px solid #ff0033;
+  border-radius: 50px;
+  transition: 0.3s;
+  text-shadow: 0 0 5px #ff0033;
+}
+.scroll-btn:hover {
+  background: #ff0033;
+  color: #fff;
+  box-shadow: 0 0 20px #ff0033;
+}
+
+/* Hero Neon Car Icons */
+.hero-icon {
+  position: absolute;
+  font-size: 60px;
+  opacity: 0.9;
+  color: #0ff;
+  text-shadow: 0 0 10px #0ff, 0 0 20px #0ff;
+}
+.icon1 { top: 20%; left: 10%; color: #ff0033; text-shadow: 0 0 10px #ff0033, 0 0 20px #ff0033; }
+.icon2 { top: 40%; right: 15%; color: #00ffea; text-shadow: 0 0 10px #00ffea, 0 0 20px #00ffea; }
+.icon3 { bottom: 25%; left: 20%; color: #ffff00; text-shadow: 0 0 10px #ffff00, 0 0 20px #ffff00; }
+.icon4 { bottom: 10%; right: 25%; color: #ff00ff; text-shadow: 0 0 10px #ff00ff, 0 0 20px #ff00ff; }
+
+/* Cars Listing */
+#cars { padding: 60px 20px; text-align: center; }
+#cars h2 { font-size: 2.5rem; margin-bottom: 40px; color: #fff; }
+.cars-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+.car-card {
+  background: #222;
+  border-radius: 15px;
+  margin: 15px;
+  width: 280px;
+  overflow: hidden;
+  text-align: center;
+  box-shadow: 0 4px 15px rgba(255,0,0,0.2);
+  transition: 0.3s;
+}
+.car-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 20px rgba(255,0,0,0.5);
+}
+.car-card img {
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+}
+.car-card h3 {
+  margin: 10px 0 5px;
+  font-weight: 600;
+}
+.car-card p {
+  margin: 5px 0;
+  color: #ccc;
+  font-size: 0.95rem;
+}
+.car-card a {
+  display: inline-block;
+  margin: 10px 0 15px;
+  padding: 10px 15px;
+  background: #25D366;
+  color: #fff;
+  text-decoration: none;
+  font-weight: bold;
+  border-radius: 50px;
+  transition: 0.3s;
+}
+.car-card a:hover {
+  background: #128C7E;
+  box-shadow: 0 0 15px #25D366;
+}
+
+/* Sell Your Car Section */
+.sell-car {
+  background: #1a1a1a;
+  text-align: center;
+  padding: 60px 20px;
+}
+.sell-car h2 {
+  font-size: 2rem;
+  margin-bottom: 15px;
+}
+.sell-car p { color: #ccc; margin-bottom: 30px; }
+.whatsapp-btn {
+  background: #25D366;
+  color: #fff;
+  padding: 12px 25px;
+  border-radius: 50px;
+  text-decoration: none;
+  font-weight: bold;
+  transition: 0.3s;
+}
+.whatsapp-btn:hover {
+  background: #128C7E;
+  box-shadow: 0 0 15px #25D366;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .cars-container { flex-direction: column; align-items: center; }
+  .hero h1 { font-size: 2rem; }
+  .hero p { font-size: 1rem; }
+  .hero-icon { font-size: 40px; }
+}

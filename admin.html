@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Panel - Add Cars</title>
+
+<!-- Firebase SDK (Compat for browser) -->
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-storage-compat.js"></script>
+
+<style>
+  body { background:#111; color:#fff; font-family:sans-serif; margin:0; padding:0;}
+  .container { max-width:500px; margin:50px auto; padding:20px; background:#222; border-radius:15px; box-shadow:0 0 30px #0ff;}
+  h2 { text-align:center; margin-bottom:20px; color:#0ff; text-shadow:0 0 10px #0ff;}
+  input, textarea, button { width:100%; padding:12px; margin:8px 0; border-radius:8px; border:none; font-size:1rem; }
+  input, textarea { background:#111; color:#fff; border:1px solid #0ff; }
+  button { background:#0ff; color:#111; font-weight:bold; cursor:pointer; transition:0.3s; }
+  button:hover { background:#0aa; color:#fff; box-shadow:0 0 15px #0ff; }
+  #status { text-align:center; margin-top:15px; font-weight:bold; }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <h2>Admin Panel - Add Car</h2>
+  <form id="carForm">
+    <input type="text" id="title" placeholder="Car Title" required>
+    <input type="text" id="brand" placeholder="Brand" required>
+    <input type="text" id="year" placeholder="Year" required>
+    <input type="text" id="mileage" placeholder="Mileage" required>
+    <input type="text" id="fuel" placeholder="Fuel" required>
+    <input type="text" id="transmission" placeholder="Transmission" required>
+    <input type="text" id="city" placeholder="City" required>
+    <textarea id="description" placeholder="Description" required></textarea>
+    <input type="file" id="images" multiple required>
+    <button type="submit">Add Car</button>
+  </form>
+  <p id="status"></p>
+</div>
+
+<script>
+  // 🔹 Firebase Config (replace storageBucket with .appspot.com)
+  const firebaseConfig = {
+    apiKey: "AIzaSyD-LmmD7M9GM2PgZi-_2K_N0SaapHAaVgw",
+    authDomain: "cardealerproject-80a33.firebaseapp.com",
+    projectId: "cardealerproject-80a33",
+    storageBucket: "cardealerproject-80a33.appspot.com", // Fixed
+    messagingSenderId: "748864580133",
+    appId: "1:748864580133:web:87bb0b0a1966be68396dcc",
+    measurementId: "G-DVVHSC0V8V"
+  };
+
+  // 🔹 Initialize Firebase
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.firestore();
+  const storage = firebase.storage();
+
+  const carForm = document.getElementById("carForm");
+  const status = document.getElementById("status");
+
+  carForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    status.style.color = "#0ff";
+    status.innerText = "Uploading images...";
+
+    try {
+      const title = document.getElementById("title").value;
+      const brand = document.getElementById("brand").value;
+      const year = document.getElementById("year").value;
+      const mileage = document.getElementById("mileage").value;
+      const fuel = document.getElementById("fuel").value;
+      const transmission = document.getElementById("transmission").value;
+      const city = document.getElementById("city").value;
+      const description = document.getElementById("description").value;
+      const imagesFiles = document.getElementById("images").files;
+
+      let imagesURLs = [];
+
+      // 🔹 Upload each image using resumable upload
+      for (let i = 0; i < imagesFiles.length; i++) {
+        const file = imagesFiles[i];
+        const storageRef = storage.ref(`cars/${Date.now()}_${file.name}`);
+        const uploadTask = storageRef.put(file);
+
+        const url = await new Promise((resolve, reject) => {
+          uploadTask.on('state_changed',
+            (snapshot) => {
+              const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+              status.innerText = `Uploading image ${i + 1}/${imagesFiles.length}: ${progress.toFixed(0)}%`;
+            },
+            (error) => reject(error),
+            async () => {
+              const downloadURL = await uploadTask.snapshot.ref.getDownloadURL();
+              resolve(downloadURL);
+            }
+          );
+        });
+
+        imagesURLs.push(url);
+      }
+
+      status.innerText = "Saving car data...";
+      await db.collection("cars").add({
+        title, brand, year, mileage, fuel, transmission, city, description,
+        images: imagesURLs,
+        status: "Available"
+      });
+
+      status.style.color = "#0f0";
+      status.innerText = "✅ Car Added Successfully!";
+      carForm.reset();
+
+    } catch (error) {
+      console.error(error);
+      status.style.color = "#f00";
+      status.innerText = "❌ Error: " + error.message;
+    }
+  });
+</script>
+
+</body>
+</html>

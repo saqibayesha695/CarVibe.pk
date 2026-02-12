@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CAR DELLEAR</title>
+  <link rel="stylesheet" href="style.css">
+  
+  <!-- Google Fonts -->
+   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-storage-compat.js"></script>
+  
+  <!-- Font Awesome for Car Icons -->
+  <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+</head>
+<body>
+
+  <!-- Hero Section -->
+  <section class="hero">
+    <!-- Neon Car Icons -->
+    <i class="fas fa-car hero-icon icon1"></i>
+    <i class="fas fa-car hero-icon icon2"></i>
+    <i class="fas fa-car hero-icon icon3"></i>
+    <i class="fas fa-car hero-icon icon4"></i>
+
+    <div class="hero-overlay"></div>
+    <div class="hero-content">
+      <h1>Find Your Perfect Car</h1>
+      <p>Luxury & Verified Cars at Your Fingertips</p>
+      <a href="#cars" class="scroll-btn">▼ Scroll to Cars ▼</a>
+    </div>
+  </section>
+
+  <!-- Cars Listing Section -->
+  <section id="cars">
+    <h2>Available Cars</h2>
+    <div id="carsContainer" class="cars-container">
+      <!-- Car cards dynamically added here -->
+    </div>
+  </section>
+
+  <!-- Sell Your Car Section -->
+  <section class="sell-car">
+    <h2>Want to Sell Your Car?</h2>
+    <p>Contact us on WhatsApp and list your car instantly!</p>
+    <a href="https://wa.me/923001234567?text=Hello,%20I%20want%20to%20sell%20my%20car" target="_blank" class="btn whatsapp-btn">Sell Your Car</a>
+  </section>
+
+  <script src="script.js"></script>
+</body>
+</html>
