@@ -8,24 +8,160 @@
 <!-- Firebase SDK -->
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
-
 <style>
-  body { background:#111; color:#fff; font-family:sans-serif; margin:0; padding:0;}
-  .container { max-width:700px; margin:50px auto; padding:20px; background:#222; border-radius:15px; box-shadow:0 0 30px #0ff;}
-  h2 { text-align:center; margin-bottom:20px; color:#0ff; text-shadow:0 0 10px #0ff;}
-  input, textarea, button { width:100%; padding:12px; margin:8px 0; border-radius:8px; border:none; font-size:1rem; }
-  input, textarea { background:#111; color:#fff; border:1px solid #0ff; }
-  button { background:#0ff; color:#111; font-weight:bold; cursor:pointer; transition:0.3s; }
-  button:hover { background:#0aa; color:#fff; box-shadow:0 0 15px #0ff; }
-  #status { text-align:center; margin-top:15px; font-weight:bold; }
-  .cars-list { margin-top:40px; }
-  .car-card { background:#333; padding:15px; margin-bottom:20px; border-radius:10px; box-shadow:0 0 10px #0ff; }
-  .car-card h3 { margin:5px 0; color:#0ff; }
-  .car-images img { width:100px; height:80px; object-fit:cover; margin-right:5px; margin-bottom:5px; cursor:pointer; border:2px solid #0ff; border-radius:5px; }
-  .car-images img:hover { border-color:#0aa; }
-  .delete-btn { background:#f00; color:#fff; padding:5px 10px; margin:5px 0; border-radius:5px; cursor:pointer; }
-  .delete-btn:hover { background:#c00; }
+*{
+  box-sizing:border-box;
+}
+
+body{
+  background:#111;
+  color:#fff;
+  font-family:sans-serif;
+  margin:0;
+  padding:0;
+}
+
+/* Container */
+.container{
+  max-width:1200px;
+  margin:30px auto;
+  padding:20px;
+  background:#222;
+  border-radius:15px;
+  box-shadow:0 0 20px #0ff;
+}
+
+/* Headings */
+h2{
+  text-align:center;
+  margin-bottom:20px;
+  color:#0ff;
+  text-shadow:0 0 10px #0ff;
+}
+
+/* Form */
+input, textarea, button{
+  width:100%;
+  padding:12px;
+  margin:8px 0;
+  border-radius:8px;
+  border:none;
+  font-size:1rem;
+}
+
+input, textarea{
+  background:#111;
+  color:#fff;
+  border:1px solid #0ff;
+}
+
+textarea{
+  resize:vertical;
+}
+
+button{
+  background:#0ff;
+  color:#111;
+  font-weight:bold;
+  cursor:pointer;
+  transition:0.3s;
+}
+
+button:hover{
+  background:#0aa;
+  color:#fff;
+  box-shadow:0 0 10px #0ff;
+}
+
+#status{
+  text-align:center;
+  margin-top:15px;
+  font-weight:bold;
+}
+
+/* Cars Grid Layout */
+.cars-list{
+  margin-top:40px;
+  display:grid;
+  grid-template-columns:repeat(auto-fit, minmax(280px, 1fr));
+  gap:20px;
+}
+
+/* Car Card */
+.car-card{
+  background:#333;
+  padding:15px;
+  border-radius:12px;
+  box-shadow:0 0 10px rgba(0,255,255,0.4);
+  display:flex;
+  flex-direction:column;
+  overflow:hidden;
+}
+
+.car-card h3{
+  margin:5px 0;
+  color:#0ff;
+  word-wrap:break-word;
+}
+
+.car-card p{
+  margin:5px 0;
+  font-size:14px;
+  word-wrap:break-word;
+}
+
+/* Images */
+.car-images{
+  display:flex;
+  flex-wrap:wrap;
+  gap:5px;
+  margin-top:10px;
+}
+
+.car-images img{
+  width:90px;
+  height:70px;
+  object-fit:cover;
+  cursor:pointer;
+  border:2px solid #0ff;
+  border-radius:6px;
+  transition:0.3s;
+}
+
+.car-images img:hover{
+  border-color:#0aa;
+  transform:scale(1.05);
+}
+
+/* Delete Button */
+.delete-btn{
+  background:#f00;
+  color:#fff;
+  padding:8px;
+  margin-top:10px;
+  border-radius:6px;
+  cursor:pointer;
+  font-size:14px;
+}
+
+.delete-btn:hover{
+  background:#c00;
+}
+
+/* Mobile Adjustments */
+@media(max-width:600px){
+  .container{
+    margin:10px;
+    padding:15px;
+  }
+
+  .car-images img{
+    width:70px;
+    height:55px;
+  }
+}
 </style>
+
 </head>
 <body>
 
